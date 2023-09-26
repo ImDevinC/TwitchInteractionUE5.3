@@ -149,7 +149,7 @@ TUniquePtr<FHttpServerResponse> FBaseHandler::AuthToken(const FHttpServerRequest
 	if (!Request.QueryParams.IsEmpty())
 	{
 		FString token = *Request.QueryParams.Find("access_token");
-		UE_LOG(LogTemp, Log, TEXT("Auth Token %s"), *token);
+		UE_LOG(HttpAuthLog, Log, TEXT("Auth Token %s"), *token);
 
 		if (UTwitchAuthentication::GlobalEventSubComponents.Num() > 0)
 		{
