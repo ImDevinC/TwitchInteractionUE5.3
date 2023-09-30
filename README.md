@@ -1,9 +1,14 @@
 # TwitchInteractionUE
 Simple plugin to interact with twitch IRC and pubsub from Unreal Engine 5
 
+# How to setup and use. 
+I have created a small video tutorial on how set up the plugin and get it working in unreal engine 5.3 
+https://www.youtube.com/watch?v=9ks-tkqM26c
+
+
 # About
 This plugin adds some C++ code and components that can be used to send and receive twitch chat messages, chat commands and received twitch bits/redeem/subscribe notifications.
-The plugin was built in UE5.3
+The plugin was built in UE5 EA but I (qworco) Have forked the plugin and updated it work in unreal engine 5.3. 
 
 # Getting Started
 
