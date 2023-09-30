@@ -4,11 +4,8 @@ Simple plugin to interact with twitch IRC and pubsub from Unreal Engine 5
 # How to setup and use. 
 I have created a small video tutorial on how set up the plugin and get it working in unreal engine 5.3 
 
-<div class="embed-container">
-    <iframe width="640" height="390" 
-    src="https://www.youtube.com/watch?v=9ks-tkqM26c" 
-    frameborder="0" allowfullscreen></iframe>
-</div>
+https://www.youtube.com/watch?v=9ks-tkqM26c
+ 
 
 
 # About
