@@ -206,18 +206,18 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 
 		if (targetMessage.data.topic.StartsWith("channel-points-channel-v1"))
 		{
-			FTwitchEventRedeemRoot twitchRedeemMessage;
-			if (!FJsonObjectConverter::JsonObjectStringToUStruct(*_jsonStr, &twitchRedeemMessage, 0, 0))
+			FTwitchEventRedeemData twitchRedeemMessage;
+			if (!FJsonObjectConverter::JsonObjectStringToUStruct(targetMessage.data.message, &twitchRedeemMessage, 0, 0))
 			{
 				// ERROR
 				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *_jsonStr);
 			}
-			// UE_LOG(LogTemp, Warning, TEXT("channel_id : %s"), *twitchRedeemMessage.channel_id);
-			// UE_LOG(LogTemp, Warning, TEXT("redeemed_at : %s"), *twitchRedeemMessage.redeemed_at);
-			// UE_LOG(LogTemp, Warning, TEXT("status : %s"), *twitchRedeemMessage.status);
-			// UE_LOG(LogTemp, Warning, TEXT("timestamp : %s"), *twitchRedeemMessage.timestamp);
-			// UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.user_input);
-			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data);
+			UE_LOG(LogTemp, Warning, TEXT("channel_id : %s"), *twitchRedeemMessage.channel_id);
+			UE_LOG(LogTemp, Warning, TEXT("redeemed_at : %s"), *twitchRedeemMessage.redeemed_at);
+			UE_LOG(LogTemp, Warning, TEXT("status : %s"), *twitchRedeemMessage.status);
+			UE_LOG(LogTemp, Warning, TEXT("timestamp : %s"), *twitchRedeemMessage.timestamp);
+			UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.user_input);
+			OnRedeemEventReceived.Broadcast(twitchRedeemMessage);
 		}
 	}
 }
