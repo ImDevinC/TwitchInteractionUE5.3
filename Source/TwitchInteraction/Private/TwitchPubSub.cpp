@@ -206,25 +206,18 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 
 		if (targetMessage.data.topic.StartsWith("channel-points-channel-v1"))
 		{
-			FTwitchEventRedeemRoot twitchRedeemMessage;
-			if (!FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &twitchRedeemMessage, 0, 0))
+			FTwitchEventRedeemData twitchRedeemMessage;
+			if (!FJsonObjectConverter::JsonObjectStringToUStruct(targetMessage.data.message, &twitchRedeemMessage, 0, 0))
 			{
 				// ERROR
 				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *_jsonStr);
 			}
-			UE_LOG(LogTemp, Warning, TEXT("Type : %s"), *twitchRedeemMessage.type);
-			UE_LOG(LogTemp, Warning, TEXT("Timestamp : %s"), *twitchRedeemMessage.data.timestamp);
-			UE_LOG(LogTemp, Warning, TEXT("Channel ID : %s"), *twitchRedeemMessage.data.channel_id);
-			UE_LOG(LogTemp, Warning, TEXT("Redeemed At : %s"), *twitchRedeemMessage.data.redeemed_at);
-			UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.data.user_input);
-			UE_LOG(LogTemp, Warning, TEXT("Status : %s"), *twitchRedeemMessage.data.status);
-			UE_LOG(LogTemp, Warning, TEXT("Redemption.id : %s"), *twitchRedeemMessage.data.redemption.id);
-			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.id : %s"), *twitchRedeemMessage.data.redemption.user.id);
-			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.login : %s"), *twitchRedeemMessage.data.redemption.user.login);
-			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.displayName : %s"), *twitchRedeemMessage.data.redemption.user.display_name);
-			UE_LOG(LogTemp, Warning, TEXT("Reward.id : %s"), *twitchRedeemMessage.data.reward.id);
-			UE_LOG(LogTemp, Warning, TEXT("Reward.title : %s"), *twitchRedeemMessage.data.reward.title);
-			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data);
+			UE_LOG(LogTemp, Warning, TEXT("channel_id : %s"), *twitchRedeemMessage.channel_id);
+			UE_LOG(LogTemp, Warning, TEXT("redeemed_at : %s"), *twitchRedeemMessage.redeemed_at);
+			UE_LOG(LogTemp, Warning, TEXT("status : %s"), *twitchRedeemMessage.status);
+			UE_LOG(LogTemp, Warning, TEXT("timestamp : %s"), *twitchRedeemMessage.timestamp);
+			UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.user_input);
+			OnRedeemEventReceived.Broadcast(twitchRedeemMessage);
 		}
 	}
 }
