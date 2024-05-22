@@ -163,10 +163,12 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 {
 	FTwitchMessage targetMessage;
 
+	UE_LOG(LogTemp, Warning, TEXT("RECV : %s"), *_jsonStr);
+
 	if (!FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &targetMessage, 0, 0))
 	{
 		// ERROR
-		UE_LOG(LogTemp, Warning, TEXT("Deserialize Error : %s"), *_jsonStr);
+		UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *_jsonStr);
 	}
 
 	if (targetMessage.type == "PONG")
@@ -211,7 +213,8 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *_jsonStr);
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Type : %s"), *twitchRedeemMessage.type);
-			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data.message);
+			UE_LOG(LogTemp, Warning, TEXT("Channel ID : %s"), *twitchRedeemMessage.data.channel_id);
+			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data);
 		}
 	}
 }

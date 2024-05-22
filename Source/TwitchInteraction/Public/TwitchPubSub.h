@@ -235,7 +235,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
 	FString type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FTwitchEventRedeemMessage data;
+	FTwitchEventRedeemData data;
 };
 
 USTRUCT(BlueprintType)
