@@ -104,7 +104,7 @@ public:
 		TArray<FString> scopes = { "chat:read", "chat:edit", "bits:read", "channel:read:redemptions", "channel:read:subscriptions" };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
-		UTwitchPubSub* EventSubComponent;
+		UTwitchPubSub* PubSubComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
 		UTwitchChat* TwitchChatComponent;
 
@@ -119,7 +119,7 @@ public:
 
 	//Global static storage because only on http listener can exist on a port so it must apply to all existing components
 	static TArray<UTwitchChat*> GlobalTwitchChatComponents;
-	static TArray<UTwitchPubSub*> GlobalEventSubComponents;
+	static TArray<UTwitchPubSub*> GlobalPubSubComponents;
 	static FTokenReceived GlobalTokenReceived;
 protected:
 	// Called when the game starts

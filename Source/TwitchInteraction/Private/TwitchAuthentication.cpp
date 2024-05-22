@@ -6,8 +6,8 @@
 
 DEFINE_LOG_CATEGORY(HttpAuthLog);
 
-TArray<UTwitchChat*> UTwitchAuthentication::GlobalTwitchChatComponents;
-TArray<UTwitchPubSub*> UTwitchAuthentication::GlobalEventSubComponents;
+TArray<UTwitchChat *> UTwitchAuthentication::GlobalTwitchChatComponents;
+TArray<UTwitchPubSub *> UTwitchAuthentication::GlobalPubSubComponents;
 FTokenReceived UTwitchAuthentication::GlobalTokenReceived;
 
 // Sets default values for this component's properties
@@ -20,13 +20,10 @@ UTwitchAuthentication::UTwitchAuthentication()
 	// ...
 }
 
-
 // Called when the game starts
 void UTwitchAuthentication::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void UTwitchAuthentication::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -35,9 +32,8 @@ void UTwitchAuthentication::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	HttpServerModule->StopAllListeners();
 }
 
-
 // Called every frame
-void UTwitchAuthentication::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UTwitchAuthentication::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -46,11 +42,11 @@ void UTwitchAuthentication::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 bool UTwitchAuthentication::FetchUserInfo(FString _username, FString _twitchToken)
 {
-	FHttpModule* Http = &FHttpModule::Get();
+	FHttpModule *Http = &FHttpModule::Get();
 
 	FHttpRequestRef Request = Http->CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &UTwitchAuthentication::ProcessGetUserInfo);
-	//This is the url on which to process the request
+	// This is the url on which to process the request
 	Request->SetURL("https://api.twitch.tv/helix/users?login=" + _username);
 	Request->SetVerb("GET");
 	Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
@@ -63,11 +59,11 @@ bool UTwitchAuthentication::FetchUserInfo(FString _username, FString _twitchToke
 
 void UTwitchAuthentication::CheckTokenValid()
 {
-	FHttpModule* Http = &FHttpModule::Get();
+	FHttpModule *Http = &FHttpModule::Get();
 
 	FHttpRequestRef Request = Http->CreateRequest();
 	Request->OnProcessRequestComplete().BindUObject(this, &UTwitchAuthentication::ProcessGetUserInfo);
-	//This is the url on which to process the request
+	// This is the url on which to process the request
 	Request->SetURL("https://api.twitch.tv/helix/users?login=" + username);
 	Request->SetVerb("GET");
 	Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
@@ -83,9 +79,9 @@ void UTwitchAuthentication::Init()
 		UTwitchAuthentication::GlobalTwitchChatComponents.Add(TwitchChatComponent);
 	}
 
-	if (EventSubComponent != nullptr)
+	if (PubSubComponent != nullptr)
 	{
-		UTwitchAuthentication::GlobalEventSubComponents.Add(EventSubComponent);
+		UTwitchAuthentication::GlobalPubSubComponents.Add(PubSubComponent);
 	}
 
 	GlobalTokenReceived = OnTokenReceived;
@@ -101,7 +97,7 @@ void UTwitchAuthentication::Init()
 	FPlatformProcess::LaunchURL(*Url, NULL, NULL);
 }
 
-void UTwitchAuthentication::BindRouters(const TSharedPtr<IHttpRouter>& HttpRouter)
+void UTwitchAuthentication::BindRouters(const TSharedPtr<IHttpRouter> &HttpRouter)
 {
 	FWebUtil::BindRoute(HttpRouter, TEXT("/Auth"), EHttpServerRequestVerbs::VERB_GET, FBaseHandler::AuthToken);
 }
@@ -144,18 +140,18 @@ void UTwitchAuthentication::ProcessTokenValidateInfo(FHttpRequestPtr Request, FH
 	}
 }
 
-TUniquePtr<FHttpServerResponse> FBaseHandler::AuthToken(const FHttpServerRequest& Request)
+TUniquePtr<FHttpServerResponse> FBaseHandler::AuthToken(const FHttpServerRequest &Request)
 {
 	if (!Request.QueryParams.IsEmpty())
 	{
 		FString token = *Request.QueryParams.Find("access_token");
 		UE_LOG(HttpAuthLog, Log, TEXT("Auth Token %s"), *token);
 
-		if (UTwitchAuthentication::GlobalEventSubComponents.Num() > 0)
+		if (UTwitchAuthentication::GlobalPubSubComponents.Num() > 0)
 		{
-			for (int i = 0; i < UTwitchAuthentication::GlobalEventSubComponents.Num(); ++i)
+			for (int i = 0; i < UTwitchAuthentication::GlobalPubSubComponents.Num(); ++i)
 			{
-				UTwitchAuthentication::GlobalEventSubComponents[i]->authToken = token;
+				UTwitchAuthentication::GlobalPubSubComponents[i]->authToken = token;
 			}
 		}
 
@@ -178,8 +174,7 @@ TUniquePtr<FHttpServerResponse> FBaseHandler::AuthToken(const FHttpServerRequest
 	}
 }
 
-
-FHttpRouteHandle FWebUtil::BindRoute(const TSharedPtr<IHttpRouter>& HttpRouter, FString Path, const EHttpServerRequestVerbs& Verb, const FHttpResponser& HttpResponser)
+FHttpRouteHandle FWebUtil::BindRoute(const TSharedPtr<IHttpRouter> &HttpRouter, FString Path, const EHttpServerRequestVerbs &Verb, const FHttpResponser &HttpResponser)
 {
 	// VERB_NONE not supported!
 	if (HttpRouter == nullptr || Verb == EHttpServerRequestVerbs::VERB_NONE)
@@ -199,7 +194,7 @@ FHttpRouteHandle FWebUtil::BindRoute(const TSharedPtr<IHttpRouter>& HttpRouter, 
 		if (GEngine != nullptr)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red,
-				FString::Printf(TEXT("Bind HTTP router failed! invalid path: %s"), *Path));
+																			 FString::Printf(TEXT("Bind HTTP router failed! invalid path: %s"), *Path));
 		}
 #endif
 		return nullptr;
@@ -216,15 +211,15 @@ FHttpRouteHandle FWebUtil::BindRoute(const TSharedPtr<IHttpRouter>& HttpRouter, 
 	if (GEngine != nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Cyan,
-			FString::Printf(TEXT("Bind HTTP router: %s\t%s"), *VerbString, *Path));
+																		 FString::Printf(TEXT("Bind HTTP router: %s\t%s"), *VerbString, *Path));
 	}
 #endif
 	return RouteHandle;
 }
 
-FHttpRequestHandler FWebUtil::CreateHandler(const FHttpResponser& HttpResponser)
+FHttpRequestHandler FWebUtil::CreateHandler(const FHttpResponser &HttpResponser)
 {
-	return [HttpResponser](const FHttpServerRequest& Request, const FHttpResultCallback& OnComplete)
+	return [HttpResponser](const FHttpServerRequest &Request, const FHttpResultCallback &OnComplete)
 	{
 		auto Response = HttpResponser(Request);
 		if (Response == nullptr)
@@ -236,7 +231,7 @@ FHttpRequestHandler FWebUtil::CreateHandler(const FHttpResponser& HttpResponser)
 	};
 }
 
-TSharedPtr<FJsonObject> FWebUtil::GetRequestJsonBody(const FHttpServerRequest& Request)
+TSharedPtr<FJsonObject> FWebUtil::GetRequestJsonBody(const FHttpServerRequest &Request)
 {
 	// check if content type is application/json
 	bool IsUTF8JsonContent = IsUTF8JsonRequestContent(Request);
@@ -275,11 +270,11 @@ UStructType* FWebUtil::GetRequestUStructBody(const FHttpServerRequest& Request)
 	{
 		return nullptr;
 	}
-	UStructType* UStructBody;
+	UStructType *UStructBody;
 	if (!FJsonObjectConverter::JsonObjectToUStruct(JsonBody, UStructBody))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("failed to parse json body to ustruct!"))
-			return nullptr;
+		return nullptr;
 	}
 	return UStructBody;
 }
@@ -325,7 +320,7 @@ TUniquePtr<FHttpServerResponse> FWebUtil::ErrorResponse(FString Message)
 
 /** ========================== Private Methods ======================= */
 
-FString FWebUtil::GetHttpVerbStringFromEnum(const EHttpServerRequestVerbs& Verb)
+FString FWebUtil::GetHttpVerbStringFromEnum(const EHttpServerRequestVerbs &Verb)
 {
 	switch (Verb)
 	{
@@ -371,15 +366,15 @@ TUniquePtr<FHttpServerResponse> FWebUtil::OkResponse(bool Success, int32 Code)
 	return FHttpServerResponse::Create(PageResponse, TEXT("text/html"));
 }
 
-bool FWebUtil::IsUTF8JsonRequestContent(const FHttpServerRequest& Request)
+bool FWebUtil::IsUTF8JsonRequestContent(const FHttpServerRequest &Request)
 {
 	bool bIsUTF8JsonContent = false;
-	for (auto& HeaderElem : Request.Headers)
+	for (auto &HeaderElem : Request.Headers)
 	{
 		auto LowerKey = HeaderElem.Key.ToLower();
 		if (LowerKey == TEXT("content-type"))
 		{
-			for (auto& Value : HeaderElem.Value)
+			for (auto &Value : HeaderElem.Value)
 			{
 				auto LowerValue = Value.ToLower();
 				// not strict check

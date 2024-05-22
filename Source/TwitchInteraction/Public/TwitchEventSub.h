@@ -1,3 +1,5 @@
+// Copyright (c) 2024 ImDevinC.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,7 +9,7 @@
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "WebSocketsModule.h"
 #include "IWebSocket.h"
-#include "TwitchPubSub.generated.h"
+#include "TwitchEventSub.generated.h"
 
 USTRUCT(BlueprintType)
 struct FTwitchEventSubMessageMetadata
@@ -20,17 +22,19 @@ public:
   FString message_type;
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FString message_timestamp;
-}
+};
 
-USTRUCT(BlueprintType) struct FTwitchEventSubMessage
+USTRUCT(BlueprintType)
+struct FTwitchEventSubMessage
 {
   GENERATED_USTRUCT_BODY()
 public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FTwitchEventSubMessageMetadata metadata;
-}
+};
 
-USTRUCT(BlueprintType) struct FTwitchEventSubMessageWelcomePayloadSession
+USTRUCT(BlueprintType)
+struct FTwitchEventSubMessageWelcomePayloadSession
 {
   GENERATED_USTRUCT_BODY()
 public:
@@ -44,17 +48,19 @@ public:
   FString keepalive_timeout_seconds;
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FString reconnect_url;
-}
+};
 
-USTRUCT(BlueprintType) struct FTwitchEventSubMessageWelcomePayload
+USTRUCT(BlueprintType)
+struct FTwitchEventSubMessageWelcomePayload
 {
   GENERATED_USTRUCT_BODY()
 public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FTwitchEventSubMessageWelcomePayloadSession session;
-}
+};
 
-USTRUCT(BlueprintType) struct FTwitchEventSubMessageWelcome
+USTRUCT(BlueprintType)
+struct FTwitchEventSubMessageWelcome
 {
   GENERATED_USTRUCT_BODY()
 public:
@@ -62,9 +68,10 @@ public:
   FTwitchEventSubMessageMetadata metadata;
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FTwitchEventSubMessageWelcomePayload payload;
-}
+};
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent)) class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent
 {
   GENERATED_BODY()
 

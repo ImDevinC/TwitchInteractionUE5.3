@@ -7,32 +7,32 @@ UTwitchEventSub::UTwitchEventSub()
   // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
   // off to improve performance if you don't need them.
   PrimaryComponentTick.bCanEverTick = true;
-}
+};
 
 void UTwitchEventSub::BeginPlay()
 {
   Super::BeginPlay();
   FModuleManager::Get().LoadModuleChecked("WebSockets");
-}
+};
 
 void UTwitchEventSub::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
   Disconnect();
-}
+};
 
 // Called every frame
 void UTwitchEventSub::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
-  Super::TickComponent(DeltaTime, TickType, ThisTickFunction)
-}
+  Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+};
 
 void UTwitchEventSub::SetInfo(const FString _oauth, const FString _authType, const FString _channelId)
 {
   authToken = _oauth;
   authType = _authType;
   channelId = _channelId;
-  Init = true;
-}
+  init = true;
+};
 
 bool UTwitchEventSub::Connect(FString &result)
 {
@@ -50,8 +50,8 @@ bool UTwitchEventSub::Connect(FString &result)
   Socket->OnMessageSent().AddLambda([this](const FString &message) -> void
                                     { UE_LOG(LogTemp, Warning, TEXT("Message sent: %s"), *message); });
   Socket->Connect();
-  return true
-}
+  return true;
+};
 
 bool UTwitchEventSub::Disconnect()
 {
@@ -60,7 +60,7 @@ bool UTwitchEventSub::Disconnect()
     Socket->Close();
   }
   return true;
-}
+};
 
 bool UTwitchEventSub::SendMessage(FString _message)
 {
@@ -68,10 +68,10 @@ bool UTwitchEventSub::SendMessage(FString _message)
   {
     UE_LOG(LogTemp, Warning, TEXT("SEND - %s"), *_message);
     Socket->Send(_message);
-    return true
+    return true;
   }
   return false;
-}
+};
 
 void UTwitchEventSub::ProcessMessage(const FString _jsonStr)
 {
@@ -80,19 +80,19 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr)
   if (!FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &targetMessage, 0, 0))
   {
     UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
-    return
+    return;
   }
-  if (targetMessage.type == "session_welcome")
+  if (targetMessage.metadata.message_type == "session_welcome")
   {
   }
-}
+};
 
 void UTwitchEventSub::RequestEventSubs()
 {
   UE_LOG(LogTemp, Warning, TEXT("Request event subs"));
-}
+};
 
 void UTwitchEventSub::UpdatePing()
 {
   UE_LOG(LogTemp, Warning, TEXT("UpdatePing"));
-}
+};
