@@ -163,17 +163,10 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 {
 	FTwitchMessage targetMessage;
 
-	// Fix twitch broken json strings
-	FString fixedStr = _jsonStr.Replace(TEXT("\"{"), TEXT("{"));
-	fixedStr = fixedStr.Replace(TEXT("}\""), TEXT("}"));
-
-	UE_LOG(LogTemp, Warning, TEXT("RECV - %s"), *_jsonStr);
-	UE_LOG(LogTemp, Warning, TEXT("RECVF - %s"), *fixedStr);
-
-	if (!FJsonObjectConverter::JsonObjectStringToUStruct(fixedStr, &targetMessage, 0, 0))
+	if (!FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &targetMessage, 0, 0))
 	{
 		// ERROR
-		UE_LOG(LogTemp, Warning, TEXT("Deserialize Error : %s"), *fixedStr);
+		UE_LOG(LogTemp, Warning, TEXT("Deserialize Error : %s"), *_jsonStr);
 	}
 
 	if (targetMessage.type == "PONG")
@@ -190,22 +183,22 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 		if (targetMessage.data.topic.StartsWith("channel-bits-events-v2"))
 		{
 			FTwitchEventBitsRoot twitchEventBitsMessage;
-			FJsonObjectConverter::JsonObjectStringToUStruct(fixedStr, &twitchEventBitsMessage, 0, 0);
+			FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &twitchEventBitsMessage, 0, 0);
 			OnBitsEventReceived.Broadcast(twitchEventBitsMessage.data.message.data);
 		}
 
 		if (targetMessage.data.topic.StartsWith("channel-bits-badge-unlocks"))
 		{
-			FString fixBadgeJson = fixedStr.Replace(TEXT("\\\""), TEXT("\""));
+			FString fixBadgeJson = _jsonStr.Replace(TEXT("\\\""), TEXT("\""));
 			FTwitchEventBitsBadgeRoot twitchEventBitsBadgeMessage;
-			FJsonObjectConverter::JsonObjectStringToUStruct(fixedStr, &twitchEventBitsBadgeMessage, 0, 0);
+			FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &twitchEventBitsBadgeMessage, 0, 0);
 			OnBitsBadgeEventReceived.Broadcast(twitchEventBitsBadgeMessage.data.message);
 		}
 
 		if (targetMessage.data.topic.StartsWith("channel-subscribe-events-v1"))
 		{
 			FTwitchEventSubscribe twitchSubscribeMessage;
-			FJsonObjectConverter::JsonObjectStringToUStruct(fixedStr, &twitchSubscribeMessage, 0, 0);
+			FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &twitchSubscribeMessage, 0, 0);
 			OnSubscribeEventReceived.Broadcast(twitchSubscribeMessage.data.message);
 		}
 
@@ -215,7 +208,7 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 			if (!FJsonObjectConverter::JsonObjectStringToUStruct(targetMessage.data.message, &twitchRedeemMessage, 0, 0))
 			{
 				// ERROR
-				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *fixedStr);
+				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *_jsonStr);
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Type : %s"), *twitchRedeemMessage.type);
 			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data.message);
