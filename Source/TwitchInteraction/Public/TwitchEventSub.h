@@ -15,6 +15,68 @@
 #include "TwitchEventSub.generated.h"
 
 USTRUCT(BlueprintType)
+struct FTwitchEventNotificationReward
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString title;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int cost;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString prompt;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventChannelPointRedeemEvent
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_input;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString status;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString redeemed_at;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationReward reward;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubChannelPointRedeemPayload
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventChannelPointRedeemEvent event;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubChannelPointRedeemMessage
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubChannelPointRedeemPayload payload;
+};
+
+USTRUCT(BlueprintType)
 struct FTwitchEventSubSubscriptionRequestTransport
 {
   GENERATED_USTRUCT_BODY()
@@ -60,6 +122,10 @@ public:
   FString message_type;
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FString message_timestamp;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString subscription_type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString subscription_version;
 };
 
 USTRUCT(BlueprintType)
@@ -108,6 +174,8 @@ public:
   FTwitchEventSubMessageWelcomePayload payload;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChannelPointsRedeemed, const FTwitchEventNotificationEventChannelPointRedeemEvent &, channelPointsInfo);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent
 {
@@ -123,8 +191,6 @@ public:
   FString authToken;
   UPROPERTY()
   FString authType;
-  UPROPERTY()
-  TArray<FString> listenTopics;
   UPROPERTY()
   FString clientId;
   UPROPERTY()
@@ -144,6 +210,8 @@ protected:
 
   void ProcessMessage(const FString _jsonStr);
   void RequestEventSubs();
+  void Subscribe(const FString type);
+  void HandleSubscriptionNotification(const FString _jsonStr);
 
 public:
   // Called every frame
@@ -162,15 +230,7 @@ public:
   void UpdatePing();
 
   UPROPERTY(BlueprintAssignable, Category = "Message Events")
-  FBitsEventReceived OnBitsEventReceived;
-  UPROPERTY(BlueprintAssignable, Category = "Message Events")
-  FBitsBadgeEventReceived OnBitsBadgeEventReceived;
-
-  UPROPERTY(BlueprintAssignable, Category = "Message Events")
-  FRedeemEventReceived OnRedeemEventReceived;
-
-  UPROPERTY(BlueprintAssignable, Category = "Message Events")
-  FSubscribeEventReceived OnSubscribeEventReceived;
+  FChannelPointsRedeemed OnChannelPointsRedeemed;
 
 private:
   uint32 requestCounter = 0;

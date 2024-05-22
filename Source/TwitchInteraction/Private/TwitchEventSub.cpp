@@ -82,6 +82,10 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr)
     UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
     return;
   }
+  if (targetMessage.metadata.message_type == "session_keepalive")
+  {
+    return;
+  }
   if (targetMessage.metadata.message_type == "session_welcome")
   {
     FTwitchEventSubMessageWelcome welcomeMessage;
@@ -93,19 +97,26 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr)
     sessionId = welcomeMessage.payload.session.id;
     RequestEventSubs();
   }
+  if (targetMessage.metadata.message_type == "notification")
+  {
+    if (targetMessage.metadata.subscription_type == "channel.channel_points_custom_reward_redemption.add")
+    {
+      FTwitchEventSubChannelPointRedeemMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &redemptionMessage, 0, 0))
+      {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      UE_LOG(LogTemp, Warning, TEXT("Redemption - %s"), *redemptionMessage.payload.event.reward.title);
+      OnChannelPointsRedeemed.Broadcast(redemptionMessage.payload.event);
+    }
+  }
 };
 
-void UTwitchEventSub::RequestEventSubs()
+void UTwitchEventSub::Subscribe(const FString type)
 {
-  FHttpModule &httpModule = FHttpModule::Get();
-  TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = httpModule.CreateRequest();
-  pRequest->SetVerb(TEXT("POST"));
-  pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
-  pRequest->SetHeader(TEXT("Client-Id"), clientId);
-  pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-
   FTwitchEventSubSubscriptionRequest requestInfo;
-  requestInfo.type = "channel.channel_points_custom_reward_redemption.add";
+  requestInfo.type = type;
   requestInfo.version = "1";
   requestInfo.condition.user_id = channelId;
   requestInfo.transport.method = "websocket";
@@ -113,6 +124,11 @@ void UTwitchEventSub::RequestEventSubs()
 
   FString result;
   FJsonObjectConverter::UStructToJsonObjectString(requestInfo, result, 0, 0, 0, nullptr, false);
+  TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = FHttpModule::Get().CreateRequest();
+  pRequest->SetVerb(TEXT("POST"));
+  pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
+  pRequest->SetHeader(TEXT("Client-Id"), clientId);
+  pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
   pRequest->SetContentAsString(result);
   pRequest->SetURL(apiUrl);
   pRequest->OnProcessRequestComplete().BindLambda(
@@ -130,13 +146,31 @@ void UTwitchEventSub::RequestEventSubs()
           UE_LOG(LogTemp, Error, TEXT("Request failed - %s"), *pResponse->GetContentAsString());
         }
       });
-  UE_LOG(LogTemp, Warning, TEXT("Verb - %s"), *pRequest->GetVerb());
-  UE_LOG(LogTemp, Warning, TEXT("Authorization - %s"), *pRequest->GetHeader(TEXT("Authorization")));
-  UE_LOG(LogTemp, Warning, TEXT("Client-Id - %s"), *pRequest->GetHeader(TEXT("Client-Id")));
-  UE_LOG(LogTemp, Warning, TEXT("Content-Type - %s"), *pRequest->GetHeader(TEXT("Content-Type")));
-  UE_LOG(LogTemp, Warning, TEXT("URL - %s"), *pRequest->GetURL());
-  // UE_LOG(LogTemp, Warning, TEXT("Content - %s"), *pRequest->GetContentAsString());
   pRequest->ProcessRequest();
+};
+
+void UTwitchEventSub::RequestEventSubs()
+{
+  FHttpModule &httpModule = FHttpModule::Get();
+  TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = httpModule.CreateRequest();
+  pRequest->SetVerb(TEXT("POST"));
+  pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
+  pRequest->SetHeader(TEXT("Client-Id"), clientId);
+  pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+  TArray<FString> subscriptions;
+  subscriptions.Add("channel.channel_points_custom_reward_redemption.add");
+  subscriptions.Add("channel.follow");
+  subscriptions.Add("channel.subscribe");
+  subscriptions.Add("channel.subscription.gift");
+  subscriptions.Add("channel.subscription.message");
+  subscriptions.Add("channel.cheer");
+  subscriptions.Add("channel.raid");
+
+  for (auto &sub : subscriptions)
+  {
+    Subscribe(sub);
+  }
 };
 
 void UTwitchEventSub::UpdatePing()
