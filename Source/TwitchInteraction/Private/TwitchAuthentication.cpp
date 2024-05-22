@@ -8,6 +8,7 @@ DEFINE_LOG_CATEGORY(HttpAuthLog);
 
 TArray<UTwitchChat *> UTwitchAuthentication::GlobalTwitchChatComponents;
 TArray<UTwitchPubSub *> UTwitchAuthentication::GlobalPubSubComponents;
+TArray<UTwitchEventSub *> UTwitchAuthentication::GlobalEventSubComponents;
 FTokenReceived UTwitchAuthentication::GlobalTokenReceived;
 
 // Sets default values for this component's properties
@@ -84,6 +85,11 @@ void UTwitchAuthentication::Init()
 		UTwitchAuthentication::GlobalPubSubComponents.Add(PubSubComponent);
 	}
 
+	if (EventSubComponent != nullptr)
+	{
+		UTwitchAuthentication::GlobalEventSubComponents.Add(EventSubComponent);
+	}
+
 	GlobalTokenReceived = OnTokenReceived;
 
 	FModuleManager::Get().LoadModuleChecked("HttpServer");
@@ -152,6 +158,14 @@ TUniquePtr<FHttpServerResponse> FBaseHandler::AuthToken(const FHttpServerRequest
 			for (int i = 0; i < UTwitchAuthentication::GlobalPubSubComponents.Num(); ++i)
 			{
 				UTwitchAuthentication::GlobalPubSubComponents[i]->authToken = token;
+			}
+		}
+
+		if (UTwitchAuthentication::GlobalEventSubComponents.Num() > 0)
+		{
+			for (int i = 0; i < UTwitchAuthentication::GlobalEventSubComponents.Num(); ++i)
+			{
+				UTwitchAuthentication::GlobalEventSubComponents[i]->authToken = token;
 			}
 		}
 

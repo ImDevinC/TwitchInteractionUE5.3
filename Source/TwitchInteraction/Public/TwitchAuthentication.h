@@ -16,6 +16,7 @@
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "TwitchPubSub.h"
 #include "TwitchChat.h"
+#include "TwitchEventSub.h"
 #include "TwitchAuthentication.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(HttpAuthLog, Log, All);
@@ -23,6 +24,7 @@ DECLARE_LOG_CATEGORY_EXTERN(HttpAuthLog, Log, All);
 typedef TFunction<TUniquePtr<FHttpServerResponse>(const FHttpServerRequest& Request)> FHttpResponser;
 
 class UTwitchPubSub;
+class UTwitchEventSub;
 class UTwitchChat;
 
 USTRUCT(BlueprintType)
@@ -106,6 +108,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
 		UTwitchPubSub* PubSubComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
+		UTwitchEventSub* EventSubComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
 		UTwitchChat* TwitchChatComponent;
 
 	UPROPERTY(BlueprintAssignable, Category = "Message Events")
@@ -120,6 +124,7 @@ public:
 	//Global static storage because only on http listener can exist on a port so it must apply to all existing components
 	static TArray<UTwitchChat*> GlobalTwitchChatComponents;
 	static TArray<UTwitchPubSub*> GlobalPubSubComponents;
+	static TArray<UTwitchEventSub*> GlobalEventSubComponents;
 	static FTokenReceived GlobalTokenReceived;
 protected:
 	// Called when the game starts
