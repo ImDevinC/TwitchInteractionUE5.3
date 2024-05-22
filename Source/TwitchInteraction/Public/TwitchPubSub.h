@@ -418,7 +418,7 @@ public:
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBitsEventReceived, const FTwitchEventBitsData &, bitsEventInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBitsBadgeEventReceived, const FTwitchEventBitsBadge &, bitsBadgeEventInfo);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRedeemEventReceived, const FTwitchEventRedeemMessage &, redeemEventInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRedeemEventReceived, const FTwitchEventRedeemData &, redeemEventInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSubscribeEventReceived, const FTwitchEventSubscribeMessage &, subscribeEventInfo);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
