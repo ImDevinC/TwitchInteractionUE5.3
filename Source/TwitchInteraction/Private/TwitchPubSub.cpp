@@ -221,7 +221,7 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.channel_id : %s"), *twitchRedeemMessage.data.redemption.channel_id);
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.redeemed_at : %s"), *twitchRedeemMessage.data.redemption.redeemed_at);
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.status : %s"), *twitchRedeemMessage.data.redemption.status);
-			// UE_LOG(LogTemp, Warning, TEXT("Redemption.reward.title : %s"), *twitchRedeemMessage.data.redemption.reward.title);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.reward.title : %s"), *twitchRedeemMessage.data.redemption.reward.title);
 			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data);
 		}
 	}

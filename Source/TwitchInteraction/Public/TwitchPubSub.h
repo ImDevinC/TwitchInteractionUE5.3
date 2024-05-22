@@ -116,23 +116,6 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FTwitchEventRedeemRedemption
-{
-	GENERATED_USTRUCT_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FTwitchEventRedeemRedemptionUser user;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString channel_id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString redeemed_at;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString status;
-};
-
-USTRUCT(BlueprintType)
 struct FTwitchEventRedeemRewardMaxPreStream
 {
 	GENERATED_USTRUCT_BODY()
@@ -196,6 +179,25 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
 	FTwitchEventRedeemRewardMaxPreStream max_per_stream;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventRedeemRedemption
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	FString id;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	FTwitchEventRedeemRedemptionUser user;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	FString channel_id;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	FString redeemed_at;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	FString status;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	FTwitchEventRedeemReward reward;
 };
 
 USTRUCT(BlueprintType)
