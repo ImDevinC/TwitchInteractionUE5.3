@@ -199,21 +199,21 @@ struct FTwitchEventRedeemData
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
 	FString timestamp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString channel_id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString redeemed_at;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	// FString channel_id;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	// FString redeemed_at;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString user_input;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FString status;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	// FString user_input;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	// FString status;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
 	FTwitchEventRedeemRedemption redemption;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-	FTwitchEventRedeemReward reward;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+	// FTwitchEventRedeemReward reward;
 };
 
 USTRUCT(BlueprintType)
