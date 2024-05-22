@@ -206,18 +206,22 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 
 		if (targetMessage.data.topic.StartsWith("channel-points-channel-v1"))
 		{
-			FTwitchEventRedeemData twitchRedeemMessage;
+			FTwitchEventRedeemMessage twitchRedeemMessage;
 			if (!FJsonObjectConverter::JsonObjectStringToUStruct(targetMessage.data.message, &twitchRedeemMessage, 0, 0))
 			{
 				// ERROR
-				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *_jsonStr);
+				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *targetMessage.data.message);
 			}
-			UE_LOG(LogTemp, Warning, TEXT("channel_id : %s"), *twitchRedeemMessage.channel_id);
-			UE_LOG(LogTemp, Warning, TEXT("redeemed_at : %s"), *twitchRedeemMessage.redeemed_at);
-			UE_LOG(LogTemp, Warning, TEXT("status : %s"), *twitchRedeemMessage.status);
-			UE_LOG(LogTemp, Warning, TEXT("timestamp : %s"), *twitchRedeemMessage.timestamp);
-			UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.user_input);
-			OnRedeemEventReceived.Broadcast(twitchRedeemMessage);
+			UE_LOG(LogTemp, Warning, TEXT("channel_id : %s"), *twitchRedeemMessage.message.channel_id);
+			UE_LOG(LogTemp, Warning, TEXT("redeemed_at : %s"), *twitchRedeemMessage.message.redeemed_at);
+			UE_LOG(LogTemp, Warning, TEXT("status : %s"), *twitchRedeemMessage.message.status);
+			UE_LOG(LogTemp, Warning, TEXT("timestamp : %s"), *twitchRedeemMessage.message.timestamp);
+			UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.message.user_input);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.id : %s"), *twitchRedeemMessage.message.redemption.id);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.id : %s"), *twitchRedeemMessage.message.redemption.user.id);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.display_name : %s"), *twitchRedeemMessage.message.redemption.user.display_name);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.login : %s"), *twitchRedeemMessage.message.redemption.user.login);
+			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.message);
 		}
 	}
 }
