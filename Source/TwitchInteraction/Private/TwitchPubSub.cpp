@@ -217,7 +217,7 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 				// ERROR
 				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *fixedStr);
 			}
-			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data);
+			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data.message);
 		}
 	}
 }
