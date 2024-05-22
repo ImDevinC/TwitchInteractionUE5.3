@@ -214,15 +214,13 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 			}
 			UE_LOG(LogTemp, Warning, TEXT("message : %s"), *targetMessage.data.message);
 			UE_LOG(LogTemp, Warning, TEXT("topic : %s"), *twitchRedeemMessage.type);
-			// UE_LOG(LogTemp, Warning, TEXT("channel_id : %s"), *twitchRedeemMessage.data.channel_id);
-			// UE_LOG(LogTemp, Warning, TEXT("redeemed_at : %s"), *twitchRedeemMessage.data.redeemed_at);
-			// UE_LOG(LogTemp, Warning, TEXT("status : %s"), *twitchRedeemMessage.data.status);
-			// UE_LOG(LogTemp, Warning, TEXT("timestamp : %s"), *twitchRedeemMessage.data.timestamp);
-			// UE_LOG(LogTemp, Warning, TEXT("User Input : %s"), *twitchRedeemMessage.data.user_input);
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.id : %s"), *twitchRedeemMessage.data.redemption.id);
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.id : %s"), *twitchRedeemMessage.data.redemption.user.id);
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.display_name : %s"), *twitchRedeemMessage.data.redemption.user.display_name);
 			UE_LOG(LogTemp, Warning, TEXT("Redemption.user.login : %s"), *twitchRedeemMessage.data.redemption.user.login);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.channel_id : %s"), *twitchRedeemMessage.data.redemption.channel_id);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.redeemed_at : %s"), *twitchRedeemMessage.data.redemption.redeemed_at);
+			UE_LOG(LogTemp, Warning, TEXT("Redemption.status : %s"), *twitchRedeemMessage.data.redemption.status);
 			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data);
 		}
 	}
