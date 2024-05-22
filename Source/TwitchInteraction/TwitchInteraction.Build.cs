@@ -11,62 +11,63 @@ public class TwitchInteraction : ModuleRules
     }
 
     public TwitchInteraction(ReadOnlyTargetRules Target) : base(Target)
-	{
-	    PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+    {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicIncludePaths.AddRange(
-			new string[] {
-						Path.Combine(ModuleDirectory, "Public"),
+        PublicIncludePaths.AddRange(
+            new string[] {
+                        Path.Combine(ModuleDirectory, "Public"),
 				// ... add public include paths required here ...
 			}
-			);
+            );
 
 
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				Path.Combine(ModuleDirectory, "Private"),
+        PrivateIncludePaths.AddRange(
+            new string[] {
+                Path.Combine(ModuleDirectory, "Private"),
 				// ... add other private include paths required here ...
 			}
-			);
+            );
 
 
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Core",
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "Core",
                 "CoreUObject",
                 "Engine",
-				"Sockets",
-				"Networking",
-				"Json",
-				"JsonUtilities",
-				"WebSockets",
+                "Sockets",
+                "Networking",
+                "Json",
+                "JsonUtilities",
+                "WebSockets",
                 "HTTP",
                 "HTTPServer"
 
                 // ... add other public dependencies that you statically link with here ...
 			}
-			);
+            );
 
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"CoreUObject",
-				"Engine",
-				"Slate",
-				"SlateCore"
+        PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "CoreUObject",
+                "Engine",
+                "Slate",
+                "SlateCore",
+                "HTTP"
 				// ... add private dependencies that you statically link with here ...	
 			}
-			);
+            );
 
 
-		DynamicallyLoadedModuleNames.AddRange(
-			new string[]
-			{
+        DynamicallyLoadedModuleNames.AddRange(
+            new string[]
+            {
             }
             );
-			
-			if (Target.Platform == UnrealTargetPlatform.Win64)
+
+        if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             bEnableExceptions = true;
 
@@ -121,5 +122,5 @@ public class TwitchInteraction : ModuleRules
                 });
         }
 
-	}
+    }
 }

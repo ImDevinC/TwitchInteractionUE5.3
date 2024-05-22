@@ -45,8 +45,7 @@ bool UTwitchEventSub::Connect(FString &result)
                                { UE_LOG(LogTemp, Warning, TEXT("Connection closed: %d, %s, %d"), statusCode, *reason, wasClean); });
   Socket->OnMessage().AddLambda([this](const FString &message) -> void
                                 { ProcessMessage(message); });
-  Socket->OnRawMessage().AddLambda([this](const void *data, SIZE_T length, SIZE_T bytesRemaining) -> void
-                                   { UE_LOG(LogTemp, Warning, TEXT("Raw message received: %s"), data); });
+  Socket->OnRawMessage().AddLambda([this](const void *data, SIZE_T length, SIZE_T bytesRemaining) -> void {});
   Socket->OnMessageSent().AddLambda([this](const FString &message) -> void
                                     { UE_LOG(LogTemp, Warning, TEXT("Message sent: %s"), *message); });
   Socket->Connect();
@@ -84,12 +83,36 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr)
   }
   if (targetMessage.metadata.message_type == "session_welcome")
   {
+    FTwitchEventSubMessageWelcome welcomeMessage;
+    if (!FJsonObjectConverter::JsonObjectStringToUStruct(_jsonStr, &welcomeMessage, 0, 0))
+    {
+      UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+      return;
+    }
+    session_id = welcomeMessage.payload.session.id;
+    RequestEventSubs();
   }
 };
 
 void UTwitchEventSub::RequestEventSubs()
 {
-  UE_LOG(LogTemp, Warning, TEXT("Request event subs"));
+  FHttpModule &httpModule = FHttpModule::Get();
+  TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = httpModule.CreateRequest();
+  pRequest->SetVerb(TEXT("POST"));
+  pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
+  pRequest->SetHeader(TEXT("Client-Id"), client_id);
+  pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+  FTwitchEventSubSubscriptionRequest requestInfo;
+  requestInfo.type = "channel.channel_points_custom_reward_redemption.add";
+  requestInfo.version = "1";
+  requestInfo.condition.user_id = channel_id;
+  requestInfo.transport.method = "websocket";
+  requestInfo.transport.session_id = session_id;
+
+  FString result;
+  FJsonObjectConverter::UStructToJsonObjectString(requestInfo, result, 0, 0, 0, nullptr, false);
+  SendMessage(result);
 };
 
 void UTwitchEventSub::UpdatePing()

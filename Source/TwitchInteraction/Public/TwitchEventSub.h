@@ -9,7 +9,45 @@
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "WebSocketsModule.h"
 #include "IWebSocket.h"
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
 #include "TwitchEventSub.generated.h"
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRequestTransport
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString method;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString session_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRequestCondition
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRequest
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString version;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestCondition condition;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestTransport transport;
+};
 
 USTRUCT(BlueprintType)
 struct FTwitchEventSubMessageMetadata
@@ -87,11 +125,15 @@ public:
   FString authType;
   UPROPERTY()
   TArray<FString> listenTopics;
+  UPROPERTY()
+  FString client_id;
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
   FString eventSubUrl = "wss://eventsub.wss.twitch.tv/ws";
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
   FString eventSubProtocol = "wss";
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
+  FString apiUrl = "https://api.twitch.tv/helix/eventsub/subscriptions";
 
 protected:
   // Called when the game starts
@@ -134,4 +176,5 @@ private:
   FTimerHandle UpdateTimer;
   uint32 pingTicker = 0;
   FDateTime LastUpdate;
+  FString session_id;
 };
