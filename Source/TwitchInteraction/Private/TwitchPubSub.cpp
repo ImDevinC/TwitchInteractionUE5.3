@@ -212,11 +212,12 @@ void UTwitchPubSub::ProcessMessage(const FString _jsonStr)
 		if (targetMessage.data.topic.StartsWith("channel-points-channel-v1"))
 		{
 			FTwitchEventRedeemRoot twitchRedeemMessage;
-			if (!FJsonObjectConverter::JsonObjectStringToUStruct(fixedStr, &twitchRedeemMessage, 0, 0))
+			if (!FJsonObjectConverter::JsonObjectStringToUStruct(targetMessage.data.message, &twitchRedeemMessage, 0, 0))
 			{
 				// ERROR
 				UE_LOG(LogTemp, Error, TEXT("Deserialize Error : %s"), *fixedStr);
 			}
+			UE_LOG(LogTemp, Warning, TEXT("Type : %s"), *twitchRedeemMessage.type);
 			OnRedeemEventReceived.Broadcast(twitchRedeemMessage.data.message);
 		}
 	}
