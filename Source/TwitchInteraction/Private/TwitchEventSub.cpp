@@ -26,12 +26,13 @@ void UTwitchEventSub::TickComponent(float DeltaTime, ELevelTick TickType, FActor
   Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 };
 
-void UTwitchEventSub::SetInfo(const FString _oauth, const FString _authType, const FString _channelId)
+void UTwitchEventSub::SetInfo(const FString _oauth, const FString _authType, const FString _channelId, const FString _clientId)
 {
   authToken = _oauth;
   authType = _authType;
   channelId = _channelId;
   init = true;
+  clientId = _clientId;
 };
 
 bool UTwitchEventSub::Connect(FString &result)
@@ -89,7 +90,7 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr)
       UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
       return;
     }
-    session_id = welcomeMessage.payload.session.id;
+    sessionId = welcomeMessage.payload.session.id;
     RequestEventSubs();
   }
 };
@@ -100,19 +101,42 @@ void UTwitchEventSub::RequestEventSubs()
   TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = httpModule.CreateRequest();
   pRequest->SetVerb(TEXT("POST"));
   pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
-  pRequest->SetHeader(TEXT("Client-Id"), client_id);
+  pRequest->SetHeader(TEXT("Client-Id"), clientId);
   pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
   FTwitchEventSubSubscriptionRequest requestInfo;
   requestInfo.type = "channel.channel_points_custom_reward_redemption.add";
   requestInfo.version = "1";
-  requestInfo.condition.user_id = channel_id;
+  requestInfo.condition.user_id = channelId;
   requestInfo.transport.method = "websocket";
-  requestInfo.transport.session_id = session_id;
+  requestInfo.transport.session_id = sessionId;
 
   FString result;
   FJsonObjectConverter::UStructToJsonObjectString(requestInfo, result, 0, 0, 0, nullptr, false);
-  SendMessage(result);
+  pRequest->SetContentAsString(result);
+  pRequest->SetURL(apiUrl);
+  pRequest->OnProcessRequestComplete().BindLambda(
+      [&](
+          FHttpRequestPtr pRequest,
+          FHttpResponsePtr pResponse,
+          bool connectedSuccessfully) mutable
+      {
+        if (connectedSuccessfully)
+        {
+          UE_LOG(LogTemp, Warning, TEXT("Request successful - %s"), *pResponse->GetContentAsString());
+        }
+        else
+        {
+          UE_LOG(LogTemp, Error, TEXT("Request failed - %s"), *pResponse->GetContentAsString());
+        }
+      });
+  UE_LOG(LogTemp, Warning, TEXT("Verb - %s"), *pRequest->GetVerb());
+  UE_LOG(LogTemp, Warning, TEXT("Authorization - %s"), *pRequest->GetHeader(TEXT("Authorization")));
+  UE_LOG(LogTemp, Warning, TEXT("Client-Id - %s"), *pRequest->GetHeader(TEXT("Client-Id")));
+  UE_LOG(LogTemp, Warning, TEXT("Content-Type - %s"), *pRequest->GetHeader(TEXT("Content-Type")));
+  UE_LOG(LogTemp, Warning, TEXT("URL - %s"), *pRequest->GetURL());
+  // UE_LOG(LogTemp, Warning, TEXT("Content - %s"), *pRequest->GetContentAsString());
+  pRequest->ProcessRequest();
 };
 
 void UTwitchEventSub::UpdatePing()

@@ -126,7 +126,9 @@ public:
   UPROPERTY()
   TArray<FString> listenTopics;
   UPROPERTY()
-  FString client_id;
+  FString clientId;
+  UPROPERTY()
+  FString sessionId;
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
   FString eventSubUrl = "wss://eventsub.wss.twitch.tv/ws";
@@ -148,7 +150,7 @@ public:
   virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
   UFUNCTION(BlueprintCallable, Category = "Setup")
-  void SetInfo(const FString _oauth, const FString _authType = "Bearer", const FString _channelId = "0");
+  void SetInfo(const FString _oauth, const FString _authType = "Bearer", const FString _channelId = "0", const FString _clientId = "0");
 
   UFUNCTION(BlueprintCallable, Category = "Setup")
   bool Connect(FString &result);
@@ -176,5 +178,4 @@ private:
   FTimerHandle UpdateTimer;
   uint32 pingTicker = 0;
   FDateTime LastUpdate;
-  FString session_id;
 };
