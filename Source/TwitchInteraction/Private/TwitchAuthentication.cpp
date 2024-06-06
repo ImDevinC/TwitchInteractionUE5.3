@@ -233,7 +233,7 @@ FHttpRequestHandler FWebUtil::CreateHandler(const FHttpResponser& HttpResponser)
 		}
 		OnComplete(MoveTemp(Response));
 		return true;
-	});
+	};
 }
 
 TSharedPtr<FJsonObject> FWebUtil::GetRequestJsonBody(const FHttpServerRequest& Request)
