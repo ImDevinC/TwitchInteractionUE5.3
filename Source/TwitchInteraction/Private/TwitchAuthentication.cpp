@@ -224,7 +224,7 @@ FHttpRouteHandle FWebUtil::BindRoute(const TSharedPtr<IHttpRouter>& HttpRouter, 
 
 FHttpRequestHandler FWebUtil::CreateHandler(const FHttpResponser& HttpResponser)
 {
-	return FHttpRequestHandler::CreateLambda([HttpResponser](const FHttpServerRequest& Request, const FHttpResultCallback& OnComplete) -> bool
+	return [HttpResponser](const FHttpServerRequest& Request, const FHttpResultCallback& OnComplete)
 	{
 		auto Response = HttpResponser(Request);
 		if (Response == nullptr)
