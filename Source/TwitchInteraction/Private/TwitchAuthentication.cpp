@@ -268,7 +268,7 @@ TSharedPtr<FJsonObject> FWebUtil::GetRequestJsonBody(const FHttpServerRequest& R
 }
 
 template <typename UStructType>
-static UStructType* FWebUtil::GetRequestUStructBody(const FHttpServerRequest& Request)
+UStructType* FWebUtil::GetRequestUStructBody(const FHttpServerRequest& Request)
 {
 	TSharedPtr<FJsonObject> JsonBody = FWebUtil::GetRequestJsonBody(Request);
 	if (JsonBody == nullptr)
