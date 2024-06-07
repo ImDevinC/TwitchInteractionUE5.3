@@ -94,6 +94,8 @@ struct FTwitchEventSubSubscriptionRequestCondition
 public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FString user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
 };
 
 USTRUCT(BlueprintType)

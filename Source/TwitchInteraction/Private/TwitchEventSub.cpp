@@ -1,4 +1,4 @@
-#include "TwitchPubSub.h"
+#include "TwitchEventSub.h"
 #include "Serialization/JsonSerializer.h"
 #include "JsonObjectConverter.h"
 
@@ -119,12 +119,14 @@ void UTwitchEventSub::Subscribe(const FString type)
   requestInfo.type = type;
   requestInfo.version = "1";
   requestInfo.condition.user_id = channelId;
+  requestInfo.condition.broadcaster_user_id = channelId;
   requestInfo.transport.method = "websocket";
   requestInfo.transport.session_id = sessionId;
 
   FString result;
   FJsonObjectConverter::UStructToJsonObjectString(requestInfo, result, 0, 0, 0, nullptr, false);
   TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = FHttpModule::Get().CreateRequest();
+  UE_LOG(LogTemp, Warning, TEXT("Connecting to EventSub with Client-Id: %s, Auth header is %s %s"), *clientId, *authType, *authToken)
   pRequest->SetVerb(TEXT("POST"));
   pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
   pRequest->SetHeader(TEXT("Client-Id"), clientId);
@@ -151,21 +153,14 @@ void UTwitchEventSub::Subscribe(const FString type)
 
 void UTwitchEventSub::RequestEventSubs()
 {
-  FHttpModule &httpModule = FHttpModule::Get();
-  TSharedRef<IHttpRequest, ESPMode::ThreadSafe> pRequest = httpModule.CreateRequest();
-  pRequest->SetVerb(TEXT("POST"));
-  pRequest->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("%s %s"), *authType, *authToken));
-  pRequest->SetHeader(TEXT("Client-Id"), clientId);
-  pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-
   TArray<FString> subscriptions;
   subscriptions.Add("channel.channel_points_custom_reward_redemption.add");
-  subscriptions.Add("channel.follow");
-  subscriptions.Add("channel.subscribe");
-  subscriptions.Add("channel.subscription.gift");
-  subscriptions.Add("channel.subscription.message");
-  subscriptions.Add("channel.cheer");
-  subscriptions.Add("channel.raid");
+//subscriptions.Add("channel.follow");
+// subscriptions.Add("channel.subscribe");
+// subscriptions.Add("channel.subscription.gift");
+// subscriptions.Add("channel.subscription.message");
+// subscriptions.Add("channel.cheer");
+// subscriptions.Add("channel.raid");
 
   for (auto &sub : subscriptions)
   {
