@@ -14,6 +14,18 @@
 #include "Interfaces/IHttpResponse.h"
 #include "TwitchEventSub.generated.h"
 
+// BEGIN Generic data structures for all events
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRequestTransport
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString method;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString session_id;
+};
+
 USTRUCT(BlueprintType)
 struct FTwitchEventNotificationReward
 {
@@ -27,90 +39,6 @@ public:
   int cost;
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FString prompt;
-};
-
-USTRUCT(BlueprintType)
-struct FTwitchEventNotificationEventChannelPointRedeemEvent
-{
-  GENERATED_USTRUCT_BODY()
-public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString id;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString broadcaster_user_id;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString broadcaster_user_login;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString broadcaster_user_name;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString user_id;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString user_login;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString user_name;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString user_input;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString status;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString redeemed_at;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FTwitchEventNotificationReward reward;
-};
-
-USTRUCT(BlueprintType)
-struct FTwitchEventSubChannelPointRedeemPayload
-{
-  GENERATED_USTRUCT_BODY()
-public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FTwitchEventNotificationEventChannelPointRedeemEvent event;
-};
-
-USTRUCT(BlueprintType)
-struct FTwitchEventSubChannelPointRedeemMessage
-{
-  GENERATED_USTRUCT_BODY()
-public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FTwitchEventSubChannelPointRedeemPayload payload;
-};
-
-USTRUCT(BlueprintType)
-struct FTwitchEventSubSubscriptionRequestTransport
-{
-  GENERATED_USTRUCT_BODY()
-public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString method;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString session_id;
-};
-
-USTRUCT(BlueprintType)
-struct FTwitchEventSubSubscriptionRequestCondition
-{
-  GENERATED_USTRUCT_BODY()
-public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString user_id;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString broadcaster_user_id;
-};
-
-USTRUCT(BlueprintType)
-struct FTwitchEventSubSubscriptionRequest
-{
-  GENERATED_USTRUCT_BODY()
-public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString type;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FString version;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FTwitchEventSubSubscriptionRequestCondition condition;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
-  FTwitchEventSubSubscriptionRequestTransport transport;
 };
 
 USTRUCT(BlueprintType)
@@ -175,8 +103,155 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
   FTwitchEventSubMessageWelcomePayload payload;
 };
+// END Generic data structures
+
+// BEGIN channel.follow
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventChannelFollowEvent
+{
+  GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString user_id;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString user_login;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString user_name;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString broadcaster_user_id;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString broadcaster_user_login;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString broadcaster_user_name;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+    FString followed_at;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubChannelFollowPayload
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventChannelFollowEvent event;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubChannelFollowMessage
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubChannelFollowPayload payload;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionFollowRequestCondition
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString moderator_user_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionChannelFollowRequest
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString version;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionFollowRequestCondition condition;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestTransport transport;
+};
+
+// END channel.follow
+
+// BEGIN channel.channel_points_custom_reward.add
+
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventChannelPointRedeemEvent
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_input;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString status;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString redeemed_at;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationReward reward;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubChannelPointRedeemPayload
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventChannelPointRedeemEvent event;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubChannelPointRedeemMessage
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubChannelPointRedeemPayload payload;
+};
+
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionChannelPointRequestCondition
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionChannelPointRequest
+{
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString version;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionChannelPointRequestCondition condition;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestTransport transport;
+};
+
+// END channel.channel_points_custom_reward.add
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChannelPointsRedeemed, const FTwitchEventNotificationEventChannelPointRedeemEvent &, channelPointsInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChannelFollowed, const FTwitchEventNotificationEventChannelFollowEvent&, channelFollowInfo);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent
@@ -233,6 +308,9 @@ public:
 
   UPROPERTY(BlueprintAssignable, Category = "Message Events")
   FChannelPointsRedeemed OnChannelPointsRedeemed;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FChannelFollowed OnChannelFollowed;
 
 private:
   uint32 requestCounter = 0;
