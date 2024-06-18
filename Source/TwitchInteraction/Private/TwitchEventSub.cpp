@@ -200,7 +200,7 @@ void UTwitchEventSub::RequestEventSubs() {
 
   FTwitchEventSubSubscriptionChannelFollowRequest followRequest;
   followRequest.type = "channel.follow";
-  followRequest.type = "2";
+  followRequest.version = "2";
   followRequest.condition.broadcaster_user_id = channelId;
   followRequest.condition.moderator_user_id = channelId;
   followRequest.transport.method = "websocket";
@@ -245,11 +245,11 @@ void UTwitchEventSub::RequestEventSubs() {
   subscriptions.Add(subscriptionRenewResult);
 
   FTwitchEventSubSubscriptionRaidRequest raidRequest;
-  subscriptionRenewRequest.type = "channel.raid";
-  subscriptionRenewRequest.version = "1";
-  subscriptionRenewRequest.condition.broadcaster_user_id = channelId;
-  subscriptionRenewRequest.transport.method = "websocket";
-  subscriptionRenewRequest.transport.session_id = sessionId;
+  raidRequest.type = "channel.raid";
+  raidRequest.version = "1";
+  raidRequest.condition.broadcaster_user_id = channelId;
+  raidRequest.transport.method = "websocket";
+  raidRequest.transport.session_id = sessionId;
   FString raidResult;
   FJsonObjectConverter::UStructToJsonObjectString(raidRequest, raidResult, 0, 0,
                                                   0, nullptr, false);
