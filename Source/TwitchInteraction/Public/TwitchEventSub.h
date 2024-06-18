@@ -294,6 +294,72 @@ public:
 
 // END channel.subscribe
 
+// BEGIN channel.subscription.gift
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventSubscriptionGift {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int total;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString tier;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int cumulative_total;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  bool is_anonymous;
+};
+
+USTRUCT(BlueprintType) struct FTwitchEventSubSubscriptionGiftPayload {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventSubscriptionGift event;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionGiftMessage {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionGiftPayload payload;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionGiftRequestCondition {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionSubscriptionGiftRequest {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString version;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionGiftRequestCondition condition;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestTransport transport;
+};
+
+// END channel.subscription.gift
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelPointsRedeemed,
     const FTwitchEventNotificationEventChannelPointRedeemEvent &,
@@ -304,6 +370,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelSubscribed, const FTwitchEventNotificationEventSubscribe &,
     channelSubscribeInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FChannelSubscriptionGifted,
+    const FTwitchEventNotificationEventSubscriptionGift &,
+    channelSubscriptionGiftInfo);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent {
@@ -368,6 +438,9 @@ public:
 
   UPROPERTY(BlueprintAssignable, Category = "Message Events")
   FChannelSubscribed OnChannelSubscribed;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FChannelSubscriptionGifted OnChannelSubscriptionGifted;
 
 private:
   uint32 requestCounter = 0;
