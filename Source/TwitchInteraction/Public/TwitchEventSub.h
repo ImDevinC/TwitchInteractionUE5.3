@@ -525,6 +525,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     channelSubscriptionRenewInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelRaided, const FTwitchEventNotificationEventRaid &, channelRaidInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConnectionError, const FString &,
+                                            reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConnectionSucceeded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConnectionClosed, const FString &,
+                                            reason);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent {
@@ -598,6 +603,15 @@ public:
 
   UPROPERTY(BlueprintAssignable, Category = "Message Events")
   FChannelRaided OnChannelRaided;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FConnectionError OnConnectionError;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FConnectionSucceeded OnConnectionSucceeded;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FConnectionClosed OnConnectionClosed;
 
 private:
   uint32 requestCounter = 0;

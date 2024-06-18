@@ -40,15 +40,18 @@ bool UTwitchEventSub::Connect(FString &result) {
       FWebSocketsModule::Get().CreateWebSocket(eventSubUrl, eventSubProtocol);
   Socket->OnConnected().AddLambda([this]() -> void {
     UE_LOG(LogTemp, Warning, TEXT("Connected to twitch eventsub"));
+    OnConnectionSucceeded.Broadcast();
   });
   Socket->OnConnectionError().AddLambda([this](const FString &error) -> void {
     UE_LOG(LogTemp, Warning, TEXT("Error connecting to twitch eventsub: %s"),
            *error);
+    OnConnectionError.Broadcast(error);
   });
   Socket->OnClosed().AddLambda(
       [this](int32 statusCode, const FString &reason, bool wasClean) -> void {
         UE_LOG(LogTemp, Warning, TEXT("Connection closed: %d, %s, %d"),
                statusCode, *reason, wasClean);
+        OnConnectionClosed.Broadcast(reason);
       });
   Socket->OnMessage().AddLambda(
       [this](const FString &message) -> void { ProcessMessage(message); });
