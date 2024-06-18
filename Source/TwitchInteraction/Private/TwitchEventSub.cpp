@@ -145,6 +145,14 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr) {
         return;
       }
       OnChannelSubscriptionRenewed.Broadcast(redemptionMessage.payload.event);
+    } else if (targetMessage.metadata.subscription_type == "channel.raid") {
+      FTwitchEventSubRaidMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(
+              _jsonStr, &redemptionMessage, 0, 0)) {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      OnChannelRaided.Broadcast(redemptionMessage.payload.event);
     }
   }
 };
@@ -235,7 +243,17 @@ void UTwitchEventSub::RequestEventSubs() {
                                                   subscriptionRenewResult, 0, 0,
                                                   0, nullptr, false);
   subscriptions.Add(subscriptionRenewResult);
-  //  subscriptions.Add("channel.raid");
+
+  FTwitchEventSubSubscriptionRaidRequest raidRequest;
+  subscriptionRenewRequest.type = "channel.raid";
+  subscriptionRenewRequest.version = "1";
+  subscriptionRenewRequest.condition.broadcaster_user_id = channelId;
+  subscriptionRenewRequest.transport.method = "websocket";
+  subscriptionRenewRequest.transport.session_id = sessionId;
+  FString raidResult;
+  FJsonObjectConverter::UStructToJsonObjectString(raidRequest, raidResult, 0, 0,
+                                                  0, nullptr, false);
+  subscriptions.Add(raidResult);
 
   for (auto &sub : subscriptions) {
     Subscribe(sub);

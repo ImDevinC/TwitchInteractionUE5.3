@@ -437,6 +437,74 @@ public:
 
 // END channel.subscription.message
 
+// BEGIN channel.raid
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventRaidMessage {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString text;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventRaid {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString from_broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString from_broadcaster_user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString from_broadcaster_user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString to_broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString to_broadcaster_user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString to_broadcaster_user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int viewers;
+};
+
+USTRUCT(BlueprintType) struct FTwitchEventSubRaidPayload {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventRaid event;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubRaidMessage {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubRaidPayload payload;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRaidRequestCondition {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRaidRequest {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString version;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRaidRequestCondition condition;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestTransport transport;
+};
+
+// END channel.raid
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelPointsRedeemed,
     const FTwitchEventNotificationEventChannelPointRedeemEvent &,
@@ -455,6 +523,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelSubscriptionRenewed,
     const FTwitchEventNotificationEventSubscriptionRenew &,
     channelSubscriptionRenewInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FChannelRaided, const FTwitchEventNotificationEventRaid &, channelRaidInfo);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent {
@@ -525,6 +595,9 @@ public:
 
   UPROPERTY(BlueprintAssignable, Category = "Message Events")
   FChannelSubscriptionRenewed OnChannelSubscriptionRenewed;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FChannelRaided OnChannelRaided;
 
 private:
   uint32 requestCounter = 0;
