@@ -118,6 +118,41 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr) {
         return;
       }
       OnChannelFollowed.Broadcast(redemptionMessage.payload.event);
+    } else if (targetMessage.metadata.subscription_type ==
+               "channel.subscribe") {
+      FTwitchEventSubSubscriptionMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(
+              _jsonStr, &redemptionMessage, 0, 0)) {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      OnChannelSubscribed.Broadcast(redemptionMessage.payload.event);
+    } else if (targetMessage.metadata.subscription_type ==
+               "channel.subscription.gift") {
+      FTwitchEventSubSubscriptionGiftMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(
+              _jsonStr, &redemptionMessage, 0, 0)) {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      OnChannelSubscriptionGifted.Broadcast(redemptionMessage.payload.event);
+    } else if (targetMessage.metadata.subscription_type ==
+               "channel.subscription.message") {
+      FTwitchEventSubSubscriptionRenewMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(
+              _jsonStr, &redemptionMessage, 0, 0)) {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      OnChannelSubscriptionRenewed.Broadcast(redemptionMessage.payload.event);
+    } else if (targetMessage.metadata.subscription_type == "channel.raid") {
+      FTwitchEventSubRaidMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(
+              _jsonStr, &redemptionMessage, 0, 0)) {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      OnChannelRaided.Broadcast(redemptionMessage.payload.event);
     }
   }
 };
@@ -165,7 +200,7 @@ void UTwitchEventSub::RequestEventSubs() {
 
   FTwitchEventSubSubscriptionChannelFollowRequest followRequest;
   followRequest.type = "channel.follow";
-  followRequest.type = "2";
+  followRequest.version = "2";
   followRequest.condition.broadcaster_user_id = channelId;
   followRequest.condition.moderator_user_id = channelId;
   followRequest.transport.method = "websocket";
@@ -175,12 +210,50 @@ void UTwitchEventSub::RequestEventSubs() {
                                                   0, 0, 0, nullptr, false);
   subscriptions.Add(followResult);
 
-  // subscriptions.Add("channel.follow");
-  //  subscriptions.Add("channel.subscribe");
-  //  subscriptions.Add("channel.subscription.gift");
-  //  subscriptions.Add("channel.subscription.message");
-  //  subscriptions.Add("channel.cheer");
-  //  subscriptions.Add("channel.raid");
+  FTwitchEventSubSubscriptionSubscribeRequest subscribeRequest;
+  subscribeRequest.type = "channel.subscribe";
+  subscribeRequest.version = "1";
+  subscribeRequest.condition.broadcaster_user_id = channelId;
+  subscribeRequest.transport.method = "websocket";
+  subscribeRequest.transport.session_id = sessionId;
+  FString subscribeResult;
+  FJsonObjectConverter::UStructToJsonObjectString(
+      subscribeRequest, subscribeResult, 0, 0, 0, nullptr, false);
+  subscriptions.Add(subscribeResult);
+
+  FTwitchEventSubSubscriptionSubscriptionGiftRequest subscriptionGiftRequest;
+  subscriptionGiftRequest.type = "channel.subscription.gift";
+  subscriptionGiftRequest.version = "1";
+  subscriptionGiftRequest.condition.broadcaster_user_id = channelId;
+  subscriptionGiftRequest.transport.method = "websocket";
+  subscriptionGiftRequest.transport.session_id = sessionId;
+  FString subscriptionGiftResult;
+  FJsonObjectConverter::UStructToJsonObjectString(
+      subscriptionGiftRequest, subscriptionGiftResult, 0, 0, 0, nullptr, false);
+  subscriptions.Add(subscriptionGiftResult);
+
+  FTwitchEventSubSubscriptionSubscriptionRenewRequest subscriptionRenewRequest;
+  subscriptionRenewRequest.type = "channel.subscription.message";
+  subscriptionRenewRequest.version = "1";
+  subscriptionRenewRequest.condition.broadcaster_user_id = channelId;
+  subscriptionRenewRequest.transport.method = "websocket";
+  subscriptionRenewRequest.transport.session_id = sessionId;
+  FString subscriptionRenewResult;
+  FJsonObjectConverter::UStructToJsonObjectString(subscriptionRenewRequest,
+                                                  subscriptionRenewResult, 0, 0,
+                                                  0, nullptr, false);
+  subscriptions.Add(subscriptionRenewResult);
+
+  FTwitchEventSubSubscriptionRaidRequest raidRequest;
+  raidRequest.type = "channel.raid";
+  raidRequest.version = "1";
+  raidRequest.condition.broadcaster_user_id = channelId;
+  raidRequest.transport.method = "websocket";
+  raidRequest.transport.session_id = sessionId;
+  FString raidResult;
+  FJsonObjectConverter::UStructToJsonObjectString(raidRequest, raidResult, 0, 0,
+                                                  0, nullptr, false);
+  subscriptions.Add(raidResult);
 
   for (auto &sub : subscriptions) {
     Subscribe(sub);
