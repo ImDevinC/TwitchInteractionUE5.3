@@ -360,6 +360,83 @@ public:
 
 // END channel.subscription.gift
 
+// BEGIN channel.subscription.message
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventSubscriptionRenewMessage {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString text;
+  // We ignore the emotes for now, will review later
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventNotificationEventSubscriptionRenew {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_login;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_name;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString tier;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventSubscriptionRenewMessage message;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int cumulative_months;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int streak_months;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  int duration_months;
+};
+
+USTRUCT(BlueprintType) struct FTwitchEventSubSubscriptionRenewPayload {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventNotificationEventSubscriptionRenew event;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRenewMessage {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRenewPayload payload;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionRenewRequestCondition {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString broadcaster_user_id;
+};
+
+USTRUCT(BlueprintType)
+struct FTwitchEventSubSubscriptionSubscriptionRenewRequest {
+  GENERATED_USTRUCT_BODY()
+public:
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString type;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FString version;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRenewRequestCondition condition;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TwitchInteraction")
+  FTwitchEventSubSubscriptionRequestTransport transport;
+};
+
+// END channel.subscription.message
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelPointsRedeemed,
     const FTwitchEventNotificationEventChannelPointRedeemEvent &,
@@ -374,6 +451,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FChannelSubscriptionGifted,
     const FTwitchEventNotificationEventSubscriptionGift &,
     channelSubscriptionGiftInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FChannelSubscriptionRenewed,
+    const FTwitchEventNotificationEventSubscriptionRenew &,
+    channelSubscriptionRenewInfo);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TWITCHINTERACTION_API UTwitchEventSub : public UActorComponent {
@@ -441,6 +522,9 @@ public:
 
   UPROPERTY(BlueprintAssignable, Category = "Message Events")
   FChannelSubscriptionGifted OnChannelSubscriptionGifted;
+
+  UPROPERTY(BlueprintAssignable, Category = "Message Events")
+  FChannelSubscriptionRenewed OnChannelSubscriptionRenewed;
 
 private:
   uint32 requestCounter = 0;
