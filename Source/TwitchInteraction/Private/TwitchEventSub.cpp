@@ -118,6 +118,15 @@ void UTwitchEventSub::ProcessMessage(const FString _jsonStr) {
         return;
       }
       OnChannelFollowed.Broadcast(redemptionMessage.payload.event);
+    } else if (targetMessage.metadata.subscription_type ==
+               "channel.subscribe") {
+      FTwitchEventSubSubscriptionMessage redemptionMessage;
+      if (!FJsonObjectConverter::JsonObjectStringToUStruct(
+              _jsonStr, &redemptionMessage, 0, 0)) {
+        UE_LOG(LogTemp, Error, TEXT("Deserialize failed - %s"), *_jsonStr);
+        return;
+      }
+      OnChannelSubscribed.Broadcast(redemptionMessage.payload.event);
     }
   }
 };
@@ -175,11 +184,19 @@ void UTwitchEventSub::RequestEventSubs() {
                                                   0, 0, 0, nullptr, false);
   subscriptions.Add(followResult);
 
-  // subscriptions.Add("channel.follow");
-  //  subscriptions.Add("channel.subscribe");
+  FTwitchEventSubSubscriptionSubscribeRequest subscribeRequest;
+  subscribeRequest.type = "channel.subscribe";
+  subscribeRequest.version = "1";
+  subscribeRequest.condition.broadcaster_user_id = channelId;
+  subscribeRequest.transport.method = "websocket";
+  subscribeRequest.transport.session_id = sessionId;
+  FString subscribeResult;
+  FJsonObjectConverter::UStructToJsonObjectString(
+      subscribeRequest, subscribeResult, 0, 0, 0, nullptr, false);
+  subscriptions.Add(subscribeResult);
+
   //  subscriptions.Add("channel.subscription.gift");
   //  subscriptions.Add("channel.subscription.message");
-  //  subscriptions.Add("channel.cheer");
   //  subscriptions.Add("channel.raid");
 
   for (auto &sub : subscriptions) {
